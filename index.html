@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <form>
+        <label>
+            your weight:
+            <input type="number" id="weight">
+        </label>
+        <br><br>
+        <label>
+            your height:
+            <input type="number" id="height">
+        </label>
+    </form>
+    <button type="button" id="send">submit</button>
+
+    <div>
+        <p>
+        Result:
+        </p>
+        <p id="result"></p>
+        <p id="messs"></p>
+    </div>
+
+    <script>
+        const send = document.getElementById("send");
+        send.addEventListener('click', function() {
+            const weight = document.getElementById("weight");
+            const height = document.getElementById("height");
+            console.log(weight.value, height.value);
+
+            async function postData(url, data) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const text = await response.text();
+                    console.log("Raw server response:", text);
+
+                    const responseData = JSON.parse(text);
+                    console.log("Parsed JSON:", responseData);
+                    
+                    if(responseData.bmi < 18.5) {
+                        const messs = document.getElementById("messs");
+                        messs.innerHTML = "i.	Underweight";
+                    }
+                    else if(responseData.bmi < 25) {
+                        const messs = document.getElementById("messs");
+                        messs.innerHTML = "ii.	Normal weight";
+                    }
+                    else if(responseData.bmi < 30) {
+                        const messs = document.getElementById("messs");
+                        messs.innerHTML = "iii.	Overweight";
+                    }
+                    else if(responseData.bmi >= 30) {
+                        const messs = document.getElementById("messs");
+                        messs.innerHTML = "iv.	Obese";
+                    }
+
+                    const result = document.getElementById("result");
+                    result.innerHTML = responseData.bmi;
+
+                } catch (error) {
+                    console.error("Error:", error);
+                }
+            }
+
+            const myData = {
+                weight: weight.value,
+                height: height.value
+            };
+
+            postData("http://localhost:3000/send", myData);
+
+            console.log(myData);
+        });
+    </script>
+</body>
+</html>
