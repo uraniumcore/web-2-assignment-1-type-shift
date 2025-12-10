@@ -21,12 +21,24 @@ app.post("/send", (req, res) => {
 
     const heightInMeters = h / 100;
     const bmi = w / (heightInMeters * heightInMeters);
+    
+    let cat;
+    if (bmi < 18.5) {
+        cat = "Underweight";
+    } else if (bmi < 25) {
+        cat = "Normal weight";
+    } else if (bmi < 30) {
+        cat = "Overweight";
+    } else {
+        cat = "Obese";
+    }
 
     res.json({
         success: true,
         weight: w,
         height: h,
-        bmi: Number(bmi.toFixed(2))
+        bmi: Number(bmi.toFixed(2)),
+        category: cat
     });
 });
 

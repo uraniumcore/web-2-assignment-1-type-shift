@@ -34,7 +34,8 @@
                 </form>
             </div>
             <div class="mt-4 p-3 border rounded bg-white">
-                Result: <span class="result" id="result">?</span>
+                Result: <span class="result" id="result">?</span><br>
+                You are: <span class="category" id="category">?</span>
             </div>
         </div>
     </div>
@@ -71,33 +72,35 @@
                     const responseData = JSON.parse(text);
                     console.log("Parsed JSON:", responseData);
 
-                    const messs = document.getElementById("result");
                     if (responseData.bmi == undefined){
                         alert("Write your actual height and weight.");
                         return;
                     }
 
-                    if (responseData.bmi < 18.5) {
-                        messs.innerHTML = "Underweight";
-                        messs.style.color = "gray";
-                    }
-                    else if (responseData.bmi < 25) {
-                        messs.innerHTML = "Normal weight";
-                        messs.style.color = "green";
-                    }
-                    else if (responseData.bmi < 30) {
-                        messs.innerHTML = "Overweight";
-                        messs.style.color = "orange";
-                    }
-                    else if (responseData.bmi >= 30) {
-                        messs.innerHTML = "Obese";
-                        messs.style.color = "red";
-                    }
-
-                    messs.classList.add('after');
-
                     const result = document.getElementById("result");
+                    result.classList.add('after');
                     result.innerHTML = responseData.bmi;
+
+                    const category = document.getElementById("category");
+                    category.classList.add('after');
+                    category.innerHTML = responseData.category;
+
+                    if (responseData.category == "Underweight") {
+                        result.style.color = "gray";
+                        category.style.color = "gray";
+                    }
+                    else if (responseData.category == "Normal weight") {
+                        result.style.color = "green";
+                        category.style.color = "green";
+                    }
+                    else if (responseData.category == "Overweight") {
+                        result.style.color = "orange";
+                        category.style.color = "orange";
+                    }
+                    else if (responseData.category == "Obese") {
+                        result.style.color = "red";
+                        category.style.color = "red";
+                    }
 
                 } catch (error) {
                     console.error("Error:", error);
