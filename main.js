@@ -10,7 +10,7 @@ app.get('/', (req, res) => {
 });
 
 app.post("/send", (req, res) => {
-    const { weight, height } = req.body;
+    const { weight, height } = req.query;
 
     const w = Number(weight);
     const h = Number(height);
