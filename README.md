@@ -103,8 +103,8 @@ fetch('/api/news')
 
 ---
 
-![API /currency](/currency.png)
+![API /currency](screenshots/currency.png)
 ---
-![API /news](/news.png)
+![API /news](screenshots/news.png)
 ---
-![API /weather](/weather.png)
+![API /weather](screenshots/weather.png)

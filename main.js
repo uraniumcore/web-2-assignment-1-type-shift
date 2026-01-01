@@ -68,7 +68,7 @@ app.get("/api/weather", async (req, res) => {
 
 app.get("/api/news", async (req, res) => {
     try {
-        const file = path.join(__dirname, 'static', 'news-georgia.json');
+        const file = path.join(__dirname, 'static/sample_data', 'news-georgia.json');
         const raw = await fs.promises.readFile(file, 'utf8');
         const data = JSON.parse(raw);
         res.json(data);
@@ -80,7 +80,7 @@ app.get("/api/news", async (req, res) => {
 
 app.get("/api/currency", async (req, res) => {
     try {
-        const file = path.join(__dirname, 'static', 'currency-sample.json');
+        const file = path.join(__dirname, 'static/sample_data', 'currency-sample.json');
         const raw = await fs.promises.readFile(file, 'utf8');
         const data = JSON.parse(raw);
         res.json(data);

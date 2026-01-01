@@ -1,2 +1,5 @@
 test.html
 node_modules
+/screenshots
+.DS_Store
+**/.DS_Store

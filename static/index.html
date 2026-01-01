@@ -3,24 +3,39 @@
 
 <head>
     <meta charset="utf-8">
-    <title>Simple Bootstrap Form</title>
+    <title>TypeShift</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link href="style.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
 
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="load-comps.js"></script>
 </head>
 
-<body class="bg-light">
+<body>
     <span id="navbar"></span>
     <main class="container py-5">
-        <h1>Welcome to TypeShift</h1>
-        <p class="lead">Men lie, women lie, we all lie, just don't make it a habbit.</p>
+        <h1 id="welcome-h1">Welcome to TypeShift</h1>
+        <p id="welcome-p" class="lead">Men lie, women lie, we all lie, just don't make it a habbit.</p>
+        <hr>
+        <div id="bottom-banner">
+            <p id="banner-text">City</p>
+        </div>
+        <section id="world-map-section">
+            <div class="img-wrap">
+                <img id="world-map" src="imgs/worldmap.jpg">
+                <p id="Trieste" class="map-icon" style="top: 30%; left: 50%;">📍</p>
+                <p id="Astana" class="map-icon" style="top: 20%; left: 68%;">📍</p>
+                <p id="Atlanta" class="map-icon" style="top: 46%; left: 21%;">📍</p>
+            </div>
+        </section>
         <hr>
         <section id="maps-weather" class="d-flex justify-content-center gap-3">
             <div id="map" style="height: 400px; width: 600px;"></div>
@@ -47,6 +62,80 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
     <script>
+        const banner = document.getElementById('bottom-banner');
+        const txt = document.getElementById('banner-text');
+
+        const trieste = document.getElementById("Trieste");
+        const astana = document.getElementById("Astana");
+        const atlanta = document.getElementById("Atlanta");
+
+        trieste.addEventListener("mouseenter", function () {
+            banner.classList.add('show');
+            txt.innerHTML = "Trieste";
+
+            setTimeout(() => {
+                banner.classList.remove('show');
+            }, 1500);
+
+        });
+
+        astana.addEventListener("mouseenter", function () {
+            banner.classList.add('show');
+            txt.innerHTML = "Astana";
+
+            setTimeout(() => {
+                banner.classList.remove('show');
+            }, 1500);
+
+        });
+
+        atlanta.addEventListener("mouseenter", function () {
+            banner.classList.add('show');
+            txt.innerHTML = "Atlanta";
+
+            setTimeout(() => {
+                banner.classList.remove('show');
+            }, 1500);
+
+        });
+
+        trieste.addEventListener("click", function () {
+            const coords = cities.get("Trieste");
+            if (coords && coords.length === 2) {
+                loadWeather(coords[0], coords[1]);
+            } else {
+                console.warn('No coordinates available for Trieste');
+            }
+        });
+
+        astana.addEventListener("click", function () {
+            const coords = cities.get("Astana");
+            if (coords && coords.length === 2) {
+                loadWeather(coords[0], coords[1]);
+            } else {
+                console.warn('No coordinates available for Astana');
+            }
+        });
+
+        atlanta.addEventListener("click", function () {
+            const coords = cities.get("Atlanta");
+            if (coords && coords.length === 2) {
+                loadWeather(coords[0], coords[1]);
+            } else {
+                console.warn('No coordinates available for Atlanta');
+            }
+        });
+    </script>
+
+    <script>
+        const cities = new Map();
+
+        // Coordinates are [lat, lon]
+        cities.set("Trieste", [45.6495, 13.7768]);
+        cities.set("Astana", [51.1655, 71.4272]);
+        cities.set("Atlanta", [33.7501, -84.3885]);
+
+
         const map = L.map('map').setView([33.7501, -84.3885], 10);
 
         L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
@@ -55,9 +144,15 @@
 
         const marker = L.marker([33.7501, -84.3885]).addTo(map);
 
-        async function loadWeather() {
+        async function loadWeather(lat = 33.7501, lon = -84.3885) {
             try {
-                const res = await fetch('http://localhost:3000/api/weather?lat=33.7501&lon=-84.3885');
+                // move marker and center map
+                if (marker && lat != null && lon != null) {
+                    marker.setLatLng([lat, lon]);
+                    map.setView([lat, lon], 10);
+                }
+
+                const res = await fetch(`http://localhost:3000/api/weather?lat=${lat}&lon=${lon}`);
                 if (!res.ok) throw new Error('Network response was not ok');
                 const data = await res.json();
                 console.log('weather data', data);
@@ -77,15 +172,15 @@
                 weatherDiv.innerHTML = `
                     <div class="card h-100">
                     <div class="card-body d-flex flex-column justify-content-center" style="height: 100%; overflow-y: auto;">
+                        <i class="custom-icon text-center custom-icon-car text-info"><img src="https://openweathermap.org/img/wn/${w?.icon}@2x.png"></i>
                         <h5 class="card-title text-center">${name || '—'}${sys && sys.country ? ', ' + sys.country : ''}</h5>
                         <h6 class="card-subtitle mb-3 text-center text-muted">${w?.main || ''} — ${w?.description || ''}</h6>
                         <p class="card-text text-center mb-1"><strong>Temperature:</strong> ${main?.temp} °C</p>
                         <p class="card-text text-center mb-1"><strong>Feels like:</strong> ${main?.feels_like} °C</p>
                         <p class="card-text text-center mb-1"><strong>Humidity:</strong> ${main?.humidity}%</p>
                         <p class="card-text text-center mb-1"><strong>Pressure:</strong> ${main?.pressure} hPa</p>
-                        <p class="card-text text-center mb-1"><strong>Wind:</strong> ${wind?.speed} m/s, ${wind?.deg}°</p>
                         <p class="card-text text-center small text-muted mt-2">Coordinates: ${coord?.lat}, ${coord?.lon}</p>
-                    </div>
+                        </div>
                     </div>
                 `;
             } catch (err) {
@@ -129,33 +224,33 @@
             }
         }
 
-            async function loadCurrency() {
-                try {
-                    const res = await fetch('/api/currency');
-                    if (!res.ok) throw new Error('Network response was not ok');
-                    const data = await res.json();
-                    const container = document.getElementById('currency');
-                    container.innerHTML = '';
+        async function loadCurrency() {
+            try {
+                const res = await fetch('/api/currency');
+                if (!res.ok) throw new Error('Network response was not ok');
+                const data = await res.json();
+                const container = document.getElementById('currency');
+                container.innerHTML = '';
 
-                    const base = data.base || 'USD';
-                    const date = data.date || '';
-                    const rates = data.rates || {};
+                const base = data.base || 'USD';
+                const date = data.date || '';
+                const rates = data.rates || {};
 
-                    const headerCol = document.createElement('div');
-                    headerCol.className = 'col-12';
-                    headerCol.innerHTML = `<p class="mb-2">Base: <strong>${base}</strong> — Date: <small class="text-muted">${date}</small></p>`;
-                    container.appendChild(headerCol);
+                const headerCol = document.createElement('div');
+                headerCol.className = 'col-12';
+                headerCol.innerHTML = `<p class="mb-2">Base: <strong>${base}</strong> — Date: <small class="text-muted">${date}</small></p>`;
+                container.appendChild(headerCol);
 
-                    const entries = Object.entries(rates);
-                    if (entries.length === 0) {
-                        container.innerHTML += '<div class="col-12"><div class="alert alert-info">No rates available.</div></div>';
-                        return;
-                    }
+                const entries = Object.entries(rates);
+                if (entries.length === 0) {
+                    container.innerHTML += '<div class="col-12"><div class="alert alert-info">No rates available.</div></div>';
+                    return;
+                }
 
-                    entries.forEach(([code, rate]) => {
-                        const col = document.createElement('div');
-                        col.className = 'col-6 col-md-4 col-lg-2';
-                        col.innerHTML = `
+                entries.forEach(([code, rate]) => {
+                    const col = document.createElement('div');
+                    col.className = 'col-6 col-md-4 col-lg-2';
+                    col.innerHTML = `
                             <div class="card text-center">
                               <div class="card-body py-2">
                                 <h6 class="mb-1">${code}</h6>
@@ -163,20 +258,20 @@
                               </div>
                             </div>
                         `;
-                        container.appendChild(col);
-                    });
-                } catch (err) {
-                    console.error(err);
-                    const container = document.getElementById('currency');
-                    container.innerHTML = `<div class="col-12"><div class="alert alert-danger">Could not load currency rates: ${err.message}</div></div>`;
-                }
+                    container.appendChild(col);
+                });
+            } catch (err) {
+                console.error(err);
+                const container = document.getElementById('currency');
+                container.innerHTML = `<div class="col-12"><div class="alert alert-danger">Could not load currency rates: ${err.message}</div></div>`;
             }
+        }
 
-            document.addEventListener('DOMContentLoaded', () => {
-                loadWeather();
-                loadNews();
-                loadCurrency();
-            });
+        document.addEventListener('DOMContentLoaded', () => {
+            loadWeather();
+            loadNews();
+            loadCurrency();
+        });
     </script>
 </body>
 
