@@ -3,14 +3,14 @@ body {
 }
 
 #welcome-h1 {
-    color: white;
-    mix-blend-mode: difference;
+    color: rgb(255, 255, 255);
+    text-shadow: 0 0 20px #000000, 0 0 20px #000000, 0 0 20px #000000;
 }
 
 #welcome-p {
     font-weight: 500;
-    color: white;
-    mix-blend-mode: difference;
+    color: rgb(255, 255, 255);
+    text-shadow: 0 0 20px #000000, 0 0 20px #000000, 0 0 20px #000000;
 }
 
 .after {
