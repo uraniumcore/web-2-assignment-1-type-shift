@@ -259,6 +259,4 @@ app.get("/blog/:id", async (req, res) => {
     }
 });
 
-app.listen(PORT, () => {
-    console.log(`Server started on http://localhost:${PORT}`);
-});
+export default app;
