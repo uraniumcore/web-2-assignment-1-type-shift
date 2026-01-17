@@ -259,4 +259,21 @@ app.get("/blog/:id", async (req, res) => {
     }
 });
 
+const startServer = async () => {
+  try {
+    await mongoose.connect(process.env.MONGODB_URI!);
+    console.log("Connected to MongoDB Atlas");
+
+    // Запускаем listen ТОЛЬКО если мы не на Vercel (локально)
+    if (process.env.NODE_ENV !== 'production') {
+      app.listen(3000, () => console.log("Server started locally"));
+    }
+  } catch (err) {
+    console.error(err);
+  }
+};
+
+startServer();
+
+// ОБЯЗАТЕЛЬНО для Vercel
 export default app;
