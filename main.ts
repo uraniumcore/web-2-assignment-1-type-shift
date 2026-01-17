@@ -11,7 +11,6 @@ dotenv.config();
 
 // app init
 const app = express();
-app.use(express.json());
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -52,7 +51,7 @@ interface IBlog extends Document {
 const blogSchema = new Schema<IBlog>({
     title: { type: String, required: true },
     body: { type: String, required: true },
-    author: { type: String, required: true },
+    author: { type: String, default: 'Anonymous' },
 }, {
     timestamps: true // Автоматически создаст и будет обновлять createdAt и updatedAt
 });
@@ -165,7 +164,15 @@ app.post("/api/login", async (req, res) => {
 
 app.post("/api/blogs", async (req, res) => {
     try {
-        const { title, body, author } = req.body;
+        let { title, body, author } = req.body;
+
+        if (title?.trim() == '' || body?.trim() == '') {
+            return res.status(400).json({ error: "Title and Body cannot be empty" });
+        }
+
+        if (!author || author.trim() == '') {
+            author = "Anonymous";
+        }
 
         const newBlog = new BlogModel({
             title,
@@ -206,7 +213,15 @@ app.get("/api/blogs/:id", async (req, res) => {
 
 app.put("/api/blogs/:id", async (req, res) => {
     try {
-        const { title, body, author } = req.body;
+        let { title, body, author } = req.body;
+
+        if (title?.trim() == '' || body?.trim() == '') {
+            return res.status(400).json({ error: "Title and Body cannot be empty" });
+        }
+
+        if (!author || author.trim() == '') {
+            author = "Anonymous";
+        }
 
         const updatedBlog = await BlogModel.findByIdAndUpdate(
             req.params.id,

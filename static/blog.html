@@ -16,7 +16,7 @@
 
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="load-comps.js"></script>
+    <script src="/load-comps.js"></script>
     <style>
         .blogs-section {
             height: 400px;
@@ -49,8 +49,84 @@
         #blog-list-main {
             display: block;
         }
+
         #blog-show {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: none;
+        }
+
+        #blog-edit {
+            display: none;
+        }
+
+        form input {
+            width: 100%;
+            border: 1px solid;
+            border-radius: 0.5rem;
+            min-width: 5rem;
+        }
+
+        form textarea {
+            width: 100%;
+            border: 1px solid;
+            border-radius: 0.5rem;
+            min-width: 5rem;
+
+        }
+
+        .blog-meta {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            padding: 15px 0;
+            border-top: 1px solid #eee;
+            border-bottom: 1px solid #eee;
+            margin-bottom: 2rem;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .author-info,
+        .date-info {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .label {
+            font-size: 0.75rem;
+            text-transform: uppercase;
+            color: #888;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        #author,
+        #date {
+            margin: 0;
+            font-weight: 600;
+            color: #333;
+            font-size: 1rem;
+        }
+
+        .divider {
+            width: 1px;
+            height: 30px;
+            background-color: #ddd;
+        }
+
+        .buttons {
+            display: flex;
+            width: 30%;
+        }
+
+        .buttons button {
+            border: 0;
+            border-radius: 0.5rem;
+            min-width: 5rem;
+            width: 100%;
+        }
+
+        .buttons button+button {
+            margin-left: 1rem;
         }
     </style>
 </head>
@@ -74,39 +150,84 @@
                 <div class="col-4" style="border-left: 1px solid;">
                     <form action="/api/blogs" method="post">
                         <label for="author">Author:</label><br>
-                        <input type="text" id="author" name="author" required><br>
+                        <input style="font-weight: 400;" value="Anonymous" placeholder="Anonymous" type="text" id="author" name="author"><br>
 
                         <label for="title">Title:</label><br>
-                        <input type="text" id="title" name="title" required><br>
+                        <input placeholder="e.g. I love TypeShift!" type="text" id="title" name="title" required><br>
 
-                        <!-- 2. Добавлен текст в label -->
                         <label for="body">Blog:</label><br>
-                        <textarea id="body" name="body" rows="4" required></textarea><br><br>
+                        <textarea placeholder="Express yourself..." id="body" name="body" rows="4"
+                            required></textarea><br><br>
 
-                        <input id="submit-blog" type="submit" value="Опубликовать">
+                        <input id="submit-blog" type="submit" value="Publish">
                     </form>
                 </div>
             </div>
         </section>
         <section id="blog-show">
             <h3 id="title">?</h1>
-            <p id="body">
-                ?
-            </p>
-            <span id="author" style="color: gray;">?</span>
+                <p id="body">
+                    ?
+                </p>
+                <div class="blog-meta">
+                    <div class="author-info">
+                        <span class="label">Автор</span>
+                        <p id="author">?</p>
+                    </div>
+                    <div class="divider"></div>
+                    <div class="date-info">
+                        <span class="label">Дата публикации</span>
+                        <p id="date">?</p>
+                    </div>
+                </div>
+                <div class="buttons">
+                    <button id="delete">Delete</button><button id="update">Edit</button>
+                    <div>
+        </section>
+        <section id="blog-edit">
+            <form id="edit-form">
+                <label for="author">Author:</label><br>
+                <input placeholder="Anonymous" type="text" id="edit-author" name="author"><br>
+
+                <label for="title">Title:</label><br>
+                <input type="text" id="edit-title" name="title" required><br>
+
+                <label for="body">Blog:</label><br>
+                <textarea id="edit-body" name="body" rows="4" required></textarea><br><br>
+                <input id="submit-edit" type="button" value="Update">
+            </form>
         </section>
     </main>
     <script>
+        let { title, body, author } = {};
+
         async function loadBlog(id) {
             try {
                 const res = await fetch(`/api/blogs/${id}`);
-                if (!res.ok) throw new Error('Network response was not ok');
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    alert("Oops! " + errorData.error);
+                    throw new Error('Failed to load blog');
+                }
                 const data = await res.json();
-                
-                const blogShow = document.getElementById("blog-show");
-                blogShow.innerHTML = `<h3 id="title">${data.title}</h1>
-                    <p id="body">${data.body}</p>
-                    <span id="author" style="color: gray;">${data.author}</span>`;
+
+                document.querySelector("#blog-show #title").innerText = data.title;
+                document.querySelector("#blog-show #body").innerText = data.body;
+                document.querySelector("#blog-show #author").innerText = data.author;
+
+                const dateStr = new Date(data.createdAt).toLocaleString('ru-RU', {
+                    day: '2-digit',
+                    month: '2-digit',
+                    year: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                document.querySelector("#blog-show #date").innerText = dateStr;
+
+                title = data.title;
+                body = data.body;
+                author = data.author;
             } catch (err) {
                 console.log(err);
             }
@@ -115,7 +236,11 @@
         async function loadBlogs() {
             try {
                 const res = await fetch('/api/blogs');
-                if (!res.ok) throw new Error('Network response was not ok');
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    alert("Oops! " + errorData.error);
+                    throw new Error('Failed to load blogs');
+                }
                 const data = await res.json();
 
                 const list = document.getElementById('ul-blogs');
@@ -131,12 +256,106 @@
             }
         }
 
+        async function deleteBlog(id) {
+            try {
+                const res = await fetch(`/api/blogs/${id}`, {
+                    method: "DELETE"
+                });
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    alert("Oops! " + errorData.error);
+                    return;
+                }
+
+                console.log("Blog deleted!");
+                window.location.href = '/blog.html';
+            } catch (err) {
+                console.log(err);
+                alert("Oops! Network error");
+            }
+        }
+
+        async function updateBlog(id) {
+            const editFormAuthor = document.getElementById("edit-author");
+            const editFormBody = document.getElementById("edit-body");
+            const editFormTitle = document.getElementById("edit-title");
+
+            const data = {
+                author: editFormAuthor.value,
+                body: editFormBody.value,
+                title: editFormTitle.value
+            }
+
+            try {
+                const res = await fetch(`/api/blogs/${id}`, {
+                    method: "PUT",
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                if (!res.ok) {
+                    const errorData = await res.json();
+                    alert("Oops!" + errorData.error);
+                    return;
+                }
+
+                console.log("Blog updated");
+                window.location.href = `/blog.html?id=${id}`;
+            } catch (err) {
+                console.log(err);
+                alert("Oops! Network error");
+            }
+
+        }
+
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             const blogId = urlParams.get('id');
 
             const blogShow = document.getElementById("blog-show");
             const blogListShow = document.getElementById("blog-list-main");
+            const blogEdit = document.getElementById("blog-edit");
+
+            const deleteButton = document.getElementById("delete");
+            const editButton = document.getElementById("update");
+            const submitEdit = document.getElementById("submit-edit");
+
+            const createForm = document.querySelector('form[action="/api/blogs"]');
+            createForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+
+                const formData = new FormData(createForm);
+                const data = {
+                    title: formData.get('title'),
+                    body: formData.get('body'),
+                    author: formData.get('author')
+                };
+
+                try {
+                    const res = await fetch('/api/blogs', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    });
+
+                    if (!res.ok) {
+                        const errorData = await res.json();
+                        alert("Oops! " + errorData.error);
+                        return;
+                    }
+
+                    // success, redirect
+                    window.location.href = "/blog.html";
+                } catch (err) {
+                    console.error(err);
+                    alert("Oops! Network error");
+                }
+            });
 
             if (blogId) {
                 blogShow.style.display = "block";
@@ -145,6 +364,27 @@
             } else {
                 loadBlogs();
             }
+
+            deleteButton.addEventListener("click", function () {
+                deleteBlog(blogId);
+            });
+
+            editButton.addEventListener("click", function () {
+                blogEdit.style.display = "block";
+                blogShow.style.display = "none";
+
+                const editFormAuthor = document.getElementById("edit-author");
+                const editFormBody = document.getElementById("edit-body");
+                const editFormTitle = document.getElementById("edit-title");
+
+                editFormAuthor.value = author;
+                editFormBody.value = body;
+                editFormTitle.value = title;
+            });
+
+            submitEdit.addEventListener("click", function () {
+                updateBlog(blogId);
+            });
         });
     </script>
 </body>
