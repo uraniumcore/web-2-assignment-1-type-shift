@@ -152,7 +152,7 @@
                     map.setView([lat, lon], 10);
                 }
 
-                const res = await fetch(`http://localhost:3000/api/weather?lat=${lat}&lon=${lon}`);
+                const res = await fetch(`/api/weather?lat=${lat}&lon=${lon}`);
                 if (!res.ok) throw new Error('Network response was not ok');
                 const data = await res.json();
                 console.log('weather data', data);
