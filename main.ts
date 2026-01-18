@@ -267,6 +267,7 @@ const startServer = async () => {
 
 // Вызываем только если мы не в режиме сборки Vercel
 if (process.env.NODE_ENV !== 'test') {
+    console.log("lol");
     startServer();
 }
 
