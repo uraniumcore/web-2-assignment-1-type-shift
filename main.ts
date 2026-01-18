@@ -245,31 +245,5 @@ app.get("/blog/:id", async (req, res) => {
     }
 });
 
-const startServer = async () => {
-    // На Vercel NODE_ENV всегда 'production'
-    if (process.env.NODE_ENV === 'production') {
-        // Для Serverless функций подключение лучше делать один раз при инициализации
-        // Но не блокировать процесс сборки вызовом startServer() в глобальном пространстве
-        mongoose.connect(process.env.MONGODB_URI!)
-            .then(() => console.log("Connected to MongoDB Atlas"))
-            .catch(err => console.error(err));
-        return;
-    }
-
-    try {
-        await mongoose.connect(process.env.MONGODB_URI!);
-        console.log("Connected to MongoDB Atlas");
-        app.listen(3000, () => console.log("Server started locally on http://localhost:3000"));
-    } catch (err) {
-        console.error(err);
-    }
-};
-
-// Вызываем только если мы не в режиме сборки Vercel
-if (process.env.NODE_ENV !== 'test') {
-    console.log("lol");
-    startServer();
-}
-
 // ОБЯЗАТЕЛЬНО для Vercel
-export default app;
+module.exports = app;
