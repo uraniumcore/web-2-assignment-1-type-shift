@@ -1,4 +1,14 @@
 {
+  "name": "typeshift",
+  "version": "2.0",
+  "description": "my project",
+  "main": "main.ts",
+  "scripts": {
+    "dev": "npx tsx main.ts"
+  },
+  "author": {
+    "name": "arsenskii"
+  },
   "type": "module",
   "dependencies": {
     "@prisma/adapter-pg": "^7.2.0",
@@ -7,6 +17,7 @@
     "bcryptjs": "^3.0.3",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
+    "express-session": "^1.19.0",
     "jsonwebtoken": "^9.0.3",
     "mongoose": "^9.1.3",
     "node-fetch": "^3.3.2",
@@ -14,6 +25,7 @@
   },
   "devDependencies": {
     "@types/express": "^5.0.6",
+    "@types/express-session": "^1.18.2",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^25.0.8",
     "@types/pg": "^8.16.0",
